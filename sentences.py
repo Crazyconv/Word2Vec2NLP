@@ -12,15 +12,23 @@ class Sentences(object):
 		self.csv_option = csv_option
 		self.process_option = process_option
 
+	def sentiment_iterator(self):
+		for file_name in os.listdir(self.dir_name):
+			paragraphs = pandas.read_csv(os.path.join(self.dir_name, file_name), \
+				delimiter=self.csv_option.deli, names=self.csv_option.title, \
+				iterator=True, chunksize=self.csv_option.chunksize)
+			for chunk in paragraphs:
+				for sentiment in chunk[self.csv_option.sentiment_name]:
+					yield sentiment
+
 	def paragraph_iterator(self):
 		for file_name in os.listdir(self.dir_name):
-				paragraphs = pandas.read_csv(os.path.join(self.dir_name, file_name), \
-					delimiter=self.csv_option.deli, names=self.csv_option.title, \
-					iterator=True, chunksize=self.csv_option.chunksize)
-				for chunk in paragraphs:
-					# split review into sentences using NLTK tokenizer
-					for paragraph in chunk[self.csv_option.review_name]:
-						yield paragraph
+			paragraphs = pandas.read_csv(os.path.join(self.dir_name, file_name), \
+				delimiter=self.csv_option.deli, names=self.csv_option.title, \
+				iterator=True, chunksize=self.csv_option.chunksize)
+			for chunk in paragraphs:
+				for paragraph in chunk[self.csv_option.review_name]:
+					yield paragraph
 
 	def __iter__(self):
 		tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')

@@ -2,3 +2,4 @@
 2. process text: seperate and used in both model? one for each?
 3. may remove default in Sentences
 4. lack normization 
+5. multiprocessing to speed up

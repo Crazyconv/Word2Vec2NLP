@@ -10,15 +10,13 @@ from sentences import Sentences
 from util import *
 import util
 
-def build_word_vector(dir_name, save_file, w2v_option=Word2VecOption(), \
-	process_option=ProcessOption(), csv_option=CsvOption(), save=True, save_file="model.bin"):
+def build_word_vector(sentences, w2v_option=Word2VecOption(), save=True, save_file="model.bin"):
 	num_features = w2v_option.num_features
 	min_word_count = w2v_option.min_word_count
 	num_workers = w2v_option.num_workers
 	context = w2v_option.context
 	downsampling = w2v_option.downsampling
 
-	sentences = Sentences(dir_name, csv_option, process_option)
 
 	model = Word2Vec(sentences, workers=num_workers, size=num_features, \
 		min_count=min_word_count, window=context, sample=downsampling, seed=1)
@@ -77,7 +75,7 @@ def build_av_tf_idf_dv(words_list, model, num_features, save=True, save_file="do
 
 	return doc_vector
 
-def build_cluster_dv(words_list, model, cluster_factor, num_cpus, save=True, save_file="doc_vector_tfidf.bin"):
+def build_cluster_dv(words_list, model, cluster_factor, num_cpus, save=True, save_file="doc_vector_cluster.bin"):
 	word_vectors = model.syn0
 	num_clusters = word_vectors[0] / cluster_factor
 	clustering = KMeans(n_clusters=num_clusters, n_jobs=num_cpus)
@@ -100,8 +98,7 @@ def build_cluster_dv(words_list, model, cluster_factor, num_cpus, save=True, sav
 	return doc_vector
 
 
-def build_doc_vector(dir_name, model_file, build_option, process_option=ProcessOption(), cluster_factor=5, num_cpus=-2):
-	model = Word2Vec.load(model_file)
+def build_doc_vector(dir_name, model, build_option, process_option=ProcessOption(), cluster_factor=5, num_cpus=-2):
 	sentences = Sentences(dir_name).paragraph_iterator()
 	stop_words = set(stopwords.words("english"))
 	words = util.process_sentences(sentences, process_option, stop_words)
@@ -111,6 +108,8 @@ def build_doc_vector(dir_name, model_file, build_option, process_option=ProcessO
 		doc_vector = build_av_tf_idf_dv(words, model)
 	else:
 		doc_vector = build_cluster_dv(words, model, cluster_factor, num_cpus)
+
+	return doc_vector
 
 
 
