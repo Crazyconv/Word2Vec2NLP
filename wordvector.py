@@ -7,7 +7,7 @@ num_workers = 4
 context = 10
 downsampling = 1e-3
 
-sentences = Sentences("/Users/Crazyconv/Desktop/03.csv");
+sentences = Sentences("/Users/Crazyconv/Conv/DEVELOPMENT/GitFolder/Word2Vec2NLP/dataset");
 
 model = Word2Vec(sentences, workers=num_workers, size=num_features, \
 	min_count=min_word_count, window=context, sample=downsampling, seed=1)
