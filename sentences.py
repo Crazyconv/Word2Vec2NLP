@@ -4,7 +4,6 @@ from nltk.corpus import stopwords
 from util import CsvOption, ProcessOption
 import util
 import os
-import fnmatch
 
 
 class Sentences(object):
@@ -14,9 +13,8 @@ class Sentences(object):
 		self.process_option = process_option
 
 	def paragraph_iterator(self):
-		for root, dirs, files in os.walk(self.dir_name):
-			for file_name in fnmatch.filter(files, "*.csv"):
-				paragraphs = pandas.read_csv(os.path.join(root, file_name), \
+		for file_name in os.listdir(self.dir_name):
+				paragraphs = pandas.read_csv(os.path.join(self.dir_name, file_name), \
 					delimiter=self.csv_option.deli, names=self.csv_option.title, \
 					iterator=True, chunksize=self.csv_option.chunksize)
 				for chunk in paragraphs:

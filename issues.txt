@@ -1,3 +1,4 @@
 1. column name: specified in csv? in program?
 2. process text: seperate and used in both model? one for each?
-3. may have several files
+3. may remove default in Sentences
+4. lack normization 
