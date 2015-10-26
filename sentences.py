@@ -6,7 +6,7 @@ import util
 
 
 class Sentences(object):
-	def __init__(self, file_name, csv_option=CsvOption(), process_option=ProcessOption(), chunksize=4):
+	def __init__(self, file_name, csv_option=CsvOption(), process_option=ProcessOption()):
 		self.file_name = file_name
 		self.csv_option = csv_option
 		self.process_option = process_option
@@ -17,7 +17,7 @@ class Sentences(object):
 		stop_words = set(stopwords.words("english"));
 		for chunk in paragraphs:
 			# split review into sentences using NLTK tokenizer
-			for paragraph in chunk["review"]:
+			for paragraph in chunk[self.csv_option.review_name]:
 				raw_sentences = tokenizer.tokenize(paragraph.decode('utf8').strip())
 				for raw_sentence in raw_sentences:
 					# process the sentence

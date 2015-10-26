@@ -13,5 +13,5 @@ model = Word2Vec(sentences, workers=num_workers, size=num_features, \
 	min_count=min_word_count, window=context, sample=downsampling, seed=1)
 
 
-model_name = "trytweet"
+model_name = "trytweet.bin"
 model.save(model_name)

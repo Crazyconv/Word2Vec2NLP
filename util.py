@@ -2,10 +2,11 @@ from bs4 import BeautifulSoup
 import re
 
 class CsvOption(object):
-	def __init__(self, deli=",", title=["id", "review"], chunksize=100):
-		self.deli = deli;
-		self.title = title;
-		self.chunksize = chunksize;
+	def __init__(self, deli=",", title=["id", "review"], chunksize=100, review_name="review"):
+		self.deli = deli
+		self.title = title
+		self.chunksize = chunksize
+		self.review_name = review_name
 
 class ProcessOption(object):
 	def __init__(self, rm_html=True, rm_punc=True, rm_num=True, lower_case=True, rm_stop_words=False):
