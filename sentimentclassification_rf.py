@@ -33,9 +33,9 @@ def main(train_dir, test_dir):
     save_fv = True
     train_fv_name = "train_fv.bin"
     test_fv_name = "test_fv.bin"
-    build_option = 1
+    build_option = 3
     save_classifier = True
-    classifier_name = "classifier.bin"
+    classifier_name = "classifier/classifier.bin"
 
     # logger info
     build_method = "average word vector"
