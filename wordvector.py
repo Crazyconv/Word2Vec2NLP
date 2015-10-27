@@ -27,13 +27,13 @@ def build_word_vector(sentences, w2v_option=Word2VecOption(), save=True, save_fi
 
     return model
 
-def build_average_dv(words_list, model, save=True, save_file="doc_vector_ave.bin"):
-    doc_vector = np.zeros(len(words_list), num_features, dtype="float32")
-    word_set = set(model.index2word)
+def build_average_dv(docs, doc_num, model, save=True, save_file="doc_vector_ave.bin"):
     num_features = model.syn0.shape[1]
+    doc_vector = np.zeros((doc_num, num_features), dtype="float64")
+    word_set = set(model.index2word)
 
     index = 0
-    for words in words_list:
+    for words in docs:
         count = 0
         for word in words:
             if word in word_set:
@@ -47,21 +47,21 @@ def build_average_dv(words_list, model, save=True, save_file="doc_vector_ave.bin
 
     return doc_vector
 
-def build_av_tf_idf_dv(words_list, model, num_features, save=True, save_file="doc_vector_tfidf.bin"):
+def build_av_tf_idf_dv(docs, doc_num, model, num_features, save=True, save_file="doc_vector_tfidf.bin"):
     vectorizer = CountVectorizer()
     tfidf_transformer = TfidfTransformer()
-    count_fv = vectorizer.fit_transform(words_list)
+    count_fv = vectorizer.fit_transform(docs)
     tfidf_fv = tfidf_transformer.transform(count_fv)
 
     # {word: index}
     vocabulary = vectorizer.vocabulary_
 
     num_features = model.syn0.shape[1]
-    doc_vector = np.zeros(len(words_list), num_features, dtype="float32")
+    doc_vector = np.zeros((doc_num, num_features), dtype="float32")
     word_set = set(model.index2word)
 
     index = 0
-    for words in words_list:
+    for words in docs:
         count = 0
         for word in words:
             if word in word_set:
@@ -75,17 +75,17 @@ def build_av_tf_idf_dv(words_list, model, num_features, save=True, save_file="do
 
     return doc_vector
 
-def build_cluster_dv(words_list, model, cluster_factor, num_cpus, save=True, save_file="doc_vector_cluster.bin"):
+def build_cluster_dv(docs, doc_num, model, cluster_factor, num_cpus, save=True, save_file="doc_vector_cluster.bin"):
     word_vectors = model.syn0
     num_clusters = word_vectors[0] / cluster_factor
     clustering = KMeans(n_clusters=num_clusters, n_jobs=num_cpus)
     centroid_ids = clustering.fit_predict(word_vectors)
     word_centroid_dic = dict(zip(model.index2word, centroid_ids))
 
-    doc_vector = np.zeros(len(words_list), num_clusters, dtype="float32")
+    doc_vector = np.zeros((doc_num, num_clusters), dtype="float32")
 
     index = 0
-    for words in words_list:
+    for words in docs:
         for word in words:
             if word in word_centroid_dic:
                 centroid_id = word_centroid_dic[word]
@@ -99,15 +99,17 @@ def build_cluster_dv(words_list, model, cluster_factor, num_cpus, save=True, sav
 
 
 def build_doc_vector(dir_name, model, build_option, process_option=ProcessOption(), cluster_factor=5, num_cpus=-2):
-    sentences = Sentences(dir_name).paragraph_iterator()
+    sentences = Sentences(dir_name)
+    docs = sentences.paragraph_iterator()
+    doc_num = sentences.doc_num
     stop_words = set(stopwords.words("english"))
-    words = util.process_sentences(sentences, process_option, stop_words)
+    post_docs = util.process_sentences(docs, process_option, stop_words)
     if build_option == 1:        # average
-        doc_vector = build_average_dv(words, model)
+        doc_vector = build_average_dv(post_docs, doc_num, model)
     elif build_option == 2:        # cluster
-        doc_vector = build_av_tf_idf_dv(words, model)
+        doc_vector = build_av_tf_idf_dv(post_docs, doc_num, model)
     else:
-        doc_vector = build_cluster_dv(words, model, cluster_factor, num_cpus)
+        doc_vector = build_cluster_dv(post_docs, doc_num, model, cluster_factor, num_cpus)
 
     return doc_vector
 

@@ -3,3 +3,4 @@
 3. may remove default in Sentences
 4. lack normization 
 5. multiprocessing to speed up
+6. logger

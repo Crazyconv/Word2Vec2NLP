@@ -18,6 +18,14 @@ class ProcessOption(object):
         self.lower_case = lower_case
         self.rm_stop_words = rm_stop_words
 
+    def __str__(self):
+        return str({"rm_html": self.rm_html, \
+            "rm_punc": self.rm_punc, \
+            "rm_num": self.rm_num, \
+            "lower_case": self.lower_case, \
+            "rm_stop_words": self.rm_stop_words 
+            })
+
 class Word2VecOption(object):
     def __init__(self, num_features=300, min_word_count=40, \
         num_workers=4, context=10, downsampling=1e-3):
@@ -30,7 +38,7 @@ class Word2VecOption(object):
 def process(sentence, process_option, stop_words):
     # remove html markup
     if process_option.rm_html:
-        sentence = BeautifulSoup(sentence).get_text()
+        sentence = BeautifulSoup(sentence, "html.parser").get_text()
 
     # remove punctuation and numbers
     if process_option.rm_punc and process_option.rm_num:
