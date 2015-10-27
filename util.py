@@ -63,3 +63,13 @@ def process(sentence, process_option, stop_words):
 def process_sentences(sentences, process_option, stop_words):
     for sentence in sentences:
         yield process(sentence, process_option, stop_words)
+
+def word2sentence(word_docs):
+    for words in word_docs:
+        yield " ".join(words)
+
+def get_word_vec_dict(model):
+    dic = {}
+    for word in model.index2word:
+        dic[word] = model[word]
+    return dic

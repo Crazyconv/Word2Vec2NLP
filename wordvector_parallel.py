@@ -9,13 +9,27 @@ from sklearn.cluster import KMeans
 from sentences import Sentences
 from util import *
 import util
+import mputil
 
 import timeit
 import logging
+from multiprocessing import Manager
+import multiprocessing as mp
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('sys.stdout')
 
+def initprocess(share):
+    mputil.toShare = share
+
+def single_average_dv(words, word_set, index, doc_num, num_features):
+    doc_vector = np.frombuffer(mputil.toShare).reshape((doc_num, num_features))
+    count = 0
+    for word in words:
+        if word in word_set:
+            doc_vector[index] = doc_vector[index] + word_set[word]
+            count += 1
+    doc_vector[index] = doc_vector[index] / (count+1)
 
 def build_word_vector(sentences, w2v_option=Word2VecOption(), save=True, save_file="model.bin"):
     num_features = w2v_option.num_features
@@ -36,28 +50,33 @@ def build_word_vector(sentences, w2v_option=Word2VecOption(), save=True, save_fi
 
 def build_average_dv(docs, doc_num, model, save=True, save_file="doc_vector_ave.bin"):
     num_features = model.syn0.shape[1]
-    doc_vector = np.zeros((doc_num, num_features), dtype="float32")
-    word_set = set(model.index2word)
+    doc_vector = np.zeros((doc_num*num_features, 1), dtype="float32")
+    word_set = util.get_word_vec_dict(model)
+
+    manager = Manager()
+    global_doc_vector = mp.Array('d', doc_vector, lock=False)
+    global_word_set = manager.dict(word_set)
+
+    pool = mp.Pool(initializer=initprocess, initargs=[global_doc_vector])
 
     index = 0
     for words in docs:
-        count = 0
-        for word in words:
-            if word in word_set:
-                doc_vector[index] = doc_vector[index] + model[word]
-                count += 1
-        doc_vector[index] = doc_vector[index] / (count+1)
+        pool.apply_async(single_average_dv, [words, global_word_set, index, doc_num, num_features, ])
         index += 1
 
+    pool.close()
+    pool.join()
+
+    doc_vector = np.frombuffer(global_doc_vector).reshape((doc_num, num_features))
+    print doc_vector
     if save:
         np.save(save_file, doc_vector)
-
     return doc_vector
 
 def build_av_tf_idf_dv(docs, doc_num, model, save=True, save_file="doc_vector_tfidf.bin"):
     vectorizer = CountVectorizer()
     tfidf_transformer = TfidfTransformer()
-    count_fv = vectorizer.fit_transform(until.word2sentence(docs))
+    count_fv = vectorizer.fit_transform(util.word2sentence(docs))
     tfidf_fv = tfidf_transformer.fit_transform(count_fv)
 
     # {word: index}
