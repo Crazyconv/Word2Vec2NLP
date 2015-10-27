@@ -14,6 +14,7 @@ import timeit
 
 from sentences import Sentences
 from util import *
+import wordvector
 import wordvector_parallel
 
 logging.basicConfig(level=logging.DEBUG)
@@ -63,39 +64,41 @@ def main(train_dir, test_dir):
     logger.info("start building training set doc vector")
     start_time = timeit.default_timer()
     train_fv = wordvector_parallel.build_doc_vector(train_dir, model, build_option, process_option, save_fv, train_fv_name)
+    print train_fv
     logger.info("training set doc vector built in %.4lfs", timeit.default_timer() - start_time)
     logger.info("training set doc vector saved to %s", train_fv_name)
     logger.debug("training size: %s", str(train_fv.shape))
 
-    # # train classifier
-    # logger.info("start training classifier")
-    # start_time = timeit.default_timer()
-    # forest = grid_search.GridSearchCV(RandomForestClassifier(), {'n_estimators':[100], 'n_jobs':[100]}, cv=5, scoring = 'f1_weighted', n_jobs=100)
-    # best_model = forest.fit(train_fv, list(train_sentences.sentiment_iterator()))
-    # logger.info("finished training classifier in %.4lfs", timeit.default_timer() - start_time)
+    # train classifier
+    logger.info("start training classifier")
+    start_time = timeit.default_timer()
+    forest = grid_search.GridSearchCV(RandomForestClassifier(), {'n_estimators':[100], 'n_jobs':[100]}, cv=5, scoring = 'f1_weighted', n_jobs=100)
+    best_model = forest.fit(train_fv, list(train_sentences.sentiment_iterator()))
+    logger.info("finished training classifier in %.4lfs", timeit.default_timer() - start_time)
 
-    # if save_classifier:
-    #     joblib.dump(best_model, classifier_name) 
+    if save_classifier:
+        joblib.dump(best_model, classifier_name) 
 
-    # # evaluate on test set
-    # logger.info("start building test set doc vector")
-    # start_time = timeit.default_timer()
-    # test_sentences = Sentences(test_dir, csv_option, process_option)
-    # test_fv = wordvector.build_doc_vector(test_dir, model, build_option, process_option, save_fv, test_fv_name)
-    # logger.info("test set doc vector built in %.4lfs", timeit.default_timer() - start_time)
-    # logger.info("test set doc vector saved to %s", test_fv_name)
-    # logger.debug("test size: %s", str(test_fv.shape))
+    # evaluate on test set
+    logger.info("start building test set doc vector")
+    start_time = timeit.default_timer()
+    test_sentences = Sentences(test_dir, csv_option, process_option)
+    test_fv = wordvector_parallel.build_doc_vector(test_dir, model, build_option, process_option, save_fv, test_fv_name)
+    print test_fv
+    logger.info("test set doc vector built in %.4lfs", timeit.default_timer() - start_time)
+    logger.info("test set doc vector saved to %s", test_fv_name)
+    logger.debug("test size: %s", str(test_fv.shape))
 
-    # logger.info("start predicting test set sentiment")
-    # start_time = timeit.default_timer()
-    # predicted_sentiment = best_model.predict(test_fv)
-    # logger.info("finished prediction in %.4lfs", timeit.default_timer() - start_time)
+    logger.info("start predicting test set sentiment")
+    start_time = timeit.default_timer()
+    predicted_sentiment = best_model.predict(test_fv)
+    logger.info("finished prediction in %.4lfs", timeit.default_timer() - start_time)
 
-    # accuracy = np.mean(predicted_sentiment == list(test_sentences.sentiment_iterator()))
+    accuracy = np.mean(predicted_sentiment == list(test_sentences.sentiment_iterator()))
 
-    # print "Test Set Accuracy = ", accuracy 
-    # print metrics.classification_report(list(test_sentences.sentiment_iterator()), \
-    #     predicted_sentiment, target_names=['0', '1', '2'])
+    print "Test Set Accuracy = ", accuracy 
+    print metrics.classification_report(list(test_sentences.sentiment_iterator()), \
+        predicted_sentiment, target_names=['0', '1', '2'])
 
 if __name__ == "__main__":
     main("/Users/Crazyconv/Conv/DEVELOPMENT/GitFolder/Word2Vec2NLP/dataset/train", \

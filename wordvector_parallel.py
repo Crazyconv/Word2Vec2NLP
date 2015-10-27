@@ -19,11 +19,21 @@ import multiprocessing as mp
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('sys.stdout')
 
-def initprocess(share):
-    mputil.toShare = share
+def initprocess(dv):
+    mputil.dv = dv
 
-def single_average_dv(words, word_set, index, doc_num, num_features):
-    doc_vector = np.frombuffer(mputil.toShare).reshape((doc_num, num_features))
+def single_av_tf_idf_dv(words, word_set, index, doc_num, vocabulary, tfidf_fv):
+    doc_vector = np.frombuffer(mputil.dv).reshape((doc_num, -1))
+    tfidf_fv = tfidf_fv.toarray()
+    count = 0
+    for word in words:
+        if word in word_set and word in vocabulary:
+            doc_vector[index] = doc_vector[index] + word_set[word]*tfidf_fv[0][vocabulary[word]]
+            count += 1
+    doc_vector[index] = doc_vector[index] / (count+1)
+
+def single_average_dv(words, word_set, index, doc_num):
+    doc_vector = np.frombuffer(mputil.dv).reshape((doc_num, -1))
     count = 0
     for word in words:
         if word in word_set:
@@ -50,55 +60,55 @@ def build_word_vector(sentences, w2v_option=Word2VecOption(), save=True, save_fi
 
 def build_average_dv(docs, doc_num, model, save=True, save_file="doc_vector_ave.bin"):
     num_features = model.syn0.shape[1]
-    doc_vector = np.zeros((doc_num*num_features, 1), dtype="float32")
-    word_set = util.get_word_vec_dict(model)
 
     manager = Manager()
-    global_doc_vector = mp.Array('d', doc_vector, lock=False)
-    global_word_set = manager.dict(word_set)
+    global_doc_vector = mp.Array('d', doc_num*num_features, lock=False)
+    global_word_set = manager.dict(util.get_word_vec_dict(model))
 
     pool = mp.Pool(initializer=initprocess, initargs=[global_doc_vector])
 
     index = 0
     for words in docs:
-        pool.apply_async(single_average_dv, [words, global_word_set, index, doc_num, num_features, ])
+        pool.apply_async(single_average_dv, [words, global_word_set, index, doc_num, ])
         index += 1
 
     pool.close()
     pool.join()
 
     doc_vector = np.frombuffer(global_doc_vector).reshape((doc_num, num_features))
-    print doc_vector
+    # print doc_vector
     if save:
         np.save(save_file, doc_vector)
     return doc_vector
 
 def build_av_tf_idf_dv(docs, doc_num, model, save=True, save_file="doc_vector_tfidf.bin"):
+    docs = list(docs)
     vectorizer = CountVectorizer()
     tfidf_transformer = TfidfTransformer()
     count_fv = vectorizer.fit_transform(util.word2sentence(docs))
     tfidf_fv = tfidf_transformer.fit_transform(count_fv)
 
-    # {word: index}
-    vocabulary = vectorizer.vocabulary_
-
     num_features = model.syn0.shape[1]
-    doc_vector = np.zeros((doc_num, num_features), dtype="float32")
-    word_set = set(model.index2word)
+
+    manager = Manager()
+    global_word_set = manager.dict(util.get_word_vec_dict(model))
+    global_vocabulary = manager.dict(vectorizer.vocabulary_);
+    global_doc_vector = mp.Array('d', doc_num*num_features, lock=False)
+
+    pool = mp.Pool(initializer=initprocess, initargs=[global_doc_vector])
 
     index = 0
+    # test(docs[0], global_word_set, 0, doc_num, global_vocabulary, global_doc_vector, global_tfidf_fv)
     for words in docs:
-        count = 0
-        for word in words:
-            if word in word_set:
-                doc_vector[index] = doc_vector[index] + model[word]*tfidf_fv[vocabulary[word]]
-                count += 1
-        doc_vector[index] = doc_vector[index] / (count+1)
+        pool.apply_async(single_av_tf_idf_dv, [words, global_word_set, index, doc_num, global_vocabulary, tfidf_fv[index]])
         index += 1
 
+    pool.close()
+    pool.join()
+
+    doc_vector = np.frombuffer(global_doc_vector).reshape((doc_num, num_features))
     if save:
         np.save(save_file, doc_vector)
-
     return doc_vector
 
 def build_cluster_dv(docs, doc_num, model, cluster_factor, num_cpus, save=True, save_file="doc_vector_cluster.bin"):
@@ -142,8 +152,3 @@ def build_doc_vector(dir_name, model, build_option, process_option=ProcessOption
         doc_vector = build_cluster_dv(post_docs, doc_num, model, cluster_factor, num_cpus)
 
     return doc_vector
-
-
-
-
-# "/Users/Crazyconv/Conv/DEVELOPMENT/GitFolder/Word2Vec2NLP/dataset"    
