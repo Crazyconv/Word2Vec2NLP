@@ -1,10 +1,12 @@
 from gensim.models import Word2Vec
 
-from sklearn import svm
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.cross_validation import cross_val_score
 from sklearn.cross_validation import train_test_split
 from sklearn import metrics
 from sklearn import grid_search
+from sklearn.externals import joblib
+import numpy as np
 
 import os
 import logging
@@ -33,7 +35,7 @@ def main(train_dir, test_dir):
     test_fv_name = "test_fv.bin"
     build_option = 1
     save_classifier = True
-    classifier_name = "classifier/classifier.bin"
+    classifier_name = "classifier.bin"
 
     # logger info
     build_method = "average word vector"
@@ -68,8 +70,8 @@ def main(train_dir, test_dir):
     # train classifier
     logger.info("start training classifier")
     start_time = timeit.default_timer()
-    clf = grid_search.GridSearchCV(svm.LinearSVC(), {'C':[ 0.01, 0.1, 1, 10, 100, 1000]}, cv=5, scoring = 'f1', n_jobs=100)
-    best_model = clf.fit(train_fv, list(train_sentences.sentiment_iterator()))
+    forest = grid_search.GridSearchCV(RandomForestClassifier(), {'n_estimators':[100], 'n_jobs':[100]}, cv=5, scoring = 'f1_weighted', n_jobs=100)
+    best_model = forest.fit(train_fv, list(train_sentences.sentiment_iterator()))
     logger.info("finished training classifier in %.4lfs", timeit.default_timer() - start_time)
 
     if save_classifier:
@@ -91,9 +93,9 @@ def main(train_dir, test_dir):
 
     accuracy = np.mean(predicted_sentiment == list(test_sentences.sentiment_iterator()))
 
-    print "Test Set Accuracy = ", Accuracy 
+    print "Test Set Accuracy = ", accuracy 
     print metrics.classification_report(list(test_sentences.sentiment_iterator()), \
-        predicted_sentiment, target_names=['positive', 'negative'])
+        predicted_sentiment, target_names=['0', '1', '2'])
 
 if __name__ == "__main__":
     main("/Users/Crazyconv/Conv/DEVELOPMENT/GitFolder/Word2Vec2NLP/dataset/train", \

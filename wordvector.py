@@ -39,7 +39,7 @@ def build_average_dv(docs, doc_num, model, save=True, save_file="doc_vector_ave.
             if word in word_set:
                 doc_vector[index] = doc_vector[index] + model[word]
                 count += 1
-        doc_vector[index] = doc_vector[index] / count
+        doc_vector[index] = doc_vector[index] / (count+1)
         index += 1
 
     if save:
@@ -67,7 +67,7 @@ def build_av_tf_idf_dv(docs, doc_num, model, num_features, save=True, save_file=
             if word in word_set:
                 doc_vector[index] = doc_vector[index] + model[word]*tfidf_fv[vocabulary[word]]
                 count += 1
-        doc_vector[index] = doc_vector[index] / count
+        doc_vector[index] = doc_vector[index] / (count+1)
         index += 1
 
     if save:
