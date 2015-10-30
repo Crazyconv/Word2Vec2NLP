@@ -25,7 +25,7 @@ def main(train_dir, test_dir):
     # these may be function parameters 
     w2v_option = Word2VecOption(num_features=300, min_word_count=40, \
         num_workers=4, context=10, downsampling=1e-3)
-    csv_option = CsvOption(deli=",", title=["id", "review", "sentiment"], \
+    csv_option = CsvOption(deli=",", title=["review", "sentiment"], \
         chunksize=100, review_name="review", sentiment_name="sentiment")
     process_option = ProcessOption(rm_html=True, rm_punc=True, rm_num=True, \
         lower_case=True, rm_stop_words=False)
@@ -34,9 +34,11 @@ def main(train_dir, test_dir):
     save_fv = True
     train_fv_name = "train_fv.bin"
     test_fv_name = "test_fv.bin"
-    build_option = 1
+    build_option = 2
     save_classifier = True
     classifier_name = "classifier/classifier.bin"
+    to_normalize = True
+    to_scale = False
 
     # logger info
     build_method = "average word vector"
@@ -57,13 +59,13 @@ def main(train_dir, test_dir):
     else:
         logger.info("start trainning word vector")
         start_time = timeit.default_timer()
-        model = wordvector_parallel.build_word_vector(train_sentences, w2v_option, save=True, save_file=model_name)
+        model = wordvector.build_word_vector(train_sentences, w2v_option, save=True, save_file=model_name)
         logger.info("model %s trained in %.4lfs", model_name, timeit.default_timer() - start_time)
 
     # get doc vector
     logger.info("start building training set doc vector")
     start_time = timeit.default_timer()
-    train_fv = wordvector_parallel.build_doc_vector(train_dir, model, build_option, process_option, save_fv, train_fv_name)
+    train_fv = wordvector.build_doc_vector(train_dir, model, build_option, process_option, save_fv, train_fv_name, )
     print train_fv
     logger.info("training set doc vector built in %.4lfs", timeit.default_timer() - start_time)
     logger.info("training set doc vector saved to %s", train_fv_name)
@@ -83,7 +85,7 @@ def main(train_dir, test_dir):
     logger.info("start building test set doc vector")
     start_time = timeit.default_timer()
     test_sentences = Sentences(test_dir, csv_option, process_option)
-    test_fv = wordvector_parallel.build_doc_vector(test_dir, model, build_option, process_option, save_fv, test_fv_name)
+    test_fv = wordvector.build_doc_vector(test_dir, model, build_option, process_option, save_fv, test_fv_name)
     print test_fv
     logger.info("test set doc vector built in %.4lfs", timeit.default_timer() - start_time)
     logger.info("test set doc vector saved to %s", test_fv_name)
@@ -98,7 +100,7 @@ def main(train_dir, test_dir):
 
     print "Test Set Accuracy = ", accuracy 
     print metrics.classification_report(list(test_sentences.sentiment_iterator()), \
-        predicted_sentiment, target_names=['0', '1', '2'])
+        predicted_sentiment, target_names=['0', '1'])
 
 if __name__ == "__main__":
     main("/Users/Crazyconv/Conv/DEVELOPMENT/GitFolder/Word2Vec2NLP/dataset/train", \

@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import re
 
 class CsvOption(object):
-    def __init__(self, deli=",", title=["id", "review", "sentiment"], \
+    def __init__(self, deli=",", title=["review", "sentiment"], \
         chunksize=100, review_name="review", sentiment_name="sentiment"):
         self.deli = deli
         self.title = title

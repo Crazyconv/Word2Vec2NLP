@@ -5,6 +5,8 @@ import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.cluster import KMeans
+from sklearn.preprocessing import scale
+from sklearn.preprocessing import normalize
 
 from sentences import Sentences
 from util import *
@@ -111,18 +113,25 @@ def build_cluster_dv(docs, doc_num, model, cluster_factor, num_cpus, save=True, 
     return doc_vector
 
 
-def build_doc_vector(dir_name, model, build_option, process_option=ProcessOption(), cluster_factor=20, num_cpus=-2):
+def build_doc_vector(dir_name, model, build_option, process_option=ProcessOption(), \
+    save=True, save_file="doc_vector.bin", \
+    to_normalize = False, to_scale = False, cluster_factor=20, num_cpus=-2):
     sentences = Sentences(dir_name)
     docs = sentences.paragraph_iterator()
     doc_num = sentences.doc_num
     stop_words = set(stopwords.words("english"))
     post_docs = util.process_sentences(docs, process_option, stop_words)
     if build_option == 1:        # average
-        doc_vector = build_average_dv(post_docs, doc_num, model)
+        doc_vector = build_average_dv(post_docs, doc_num, model, save, save_file)
     elif build_option == 2:        # cluster
-        doc_vector = build_av_tf_idf_dv(post_docs, doc_num, model)
+        doc_vector = build_av_tf_idf_dv(post_docs, doc_num, model, save, save_file)
     else:
-        doc_vector = build_cluster_dv(post_docs, doc_num, model, cluster_factor, num_cpus)
+        doc_vector = build_cluster_dv(post_docs, doc_num, model, cluster_factor, num_cpus, save, save_file)
+
+    if(normalize):
+        doc_vector = normalize(doc_vector, copy=False)
+    if(scale):
+        doc_vector = scale(doc_vector, copy=True)
 
     return doc_vector
 
