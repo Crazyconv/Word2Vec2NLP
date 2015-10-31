@@ -1,6 +1,7 @@
 import pandas
 import nltk.data
 from nltk.corpus import stopwords
+from nltk.tokenize import TweetTokenizer
 from util import CsvOption, ProcessOption
 import util
 import os
@@ -15,12 +16,13 @@ class Sentences(object):
 
     def __iter__(self):
         tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
+        tknzr = TweetTokenizer(preserve_case=False);
         stop_words = set(stopwords.words("english"))
         for paragraph in self.paragraph_iterator():
             raw_sentences = tokenizer.tokenize(paragraph.decode('utf8').strip())
             for raw_sentence in raw_sentences:
                 # process the sentence
-                sentence = util.process(raw_sentence, self.process_option, stop_words)
+                sentence = util.process(raw_sentence, tknzr, self.process_option, stop_words)
                 yield sentence
 
     def sentiment_iterator(self):

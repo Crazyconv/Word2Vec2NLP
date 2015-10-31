@@ -4,4 +4,4 @@ classifier/
 *.npy
 *.pyc
 *.bin
-
+*.gz

@@ -100,7 +100,7 @@ def main(train_dir, test_dir):
 
     print "Test Set Accuracy = ", accuracy 
     print metrics.classification_report(list(test_sentences.sentiment_iterator()), \
-        predicted_sentiment, target_names=['0', '1'])
+        predicted_sentiment, target_names=['0', '1', '2', '3'])
 
 if __name__ == "__main__":
     main("/Users/Crazyconv/Conv/DEVELOPMENT/GitFolder/Word2Vec2NLP/dataset/train", \

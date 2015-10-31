@@ -7,6 +7,7 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import scale
 from sklearn.preprocessing import normalize
+from nltk.tokenize import TweetTokenizer
 
 from sentences import Sentences
 from util import *
@@ -120,7 +121,8 @@ def build_doc_vector(dir_name, model, build_option, process_option=ProcessOption
     docs = sentences.paragraph_iterator()
     doc_num = sentences.doc_num
     stop_words = set(stopwords.words("english"))
-    post_docs = util.process_sentences(docs, process_option, stop_words)
+    tknzr = TweetTokenizer(preserve_case=False)
+    post_docs = util.process_sentences(docs, tknzr, process_option, stop_words)
     if build_option == 1:        # average
         doc_vector = build_average_dv(post_docs, doc_num, model, save, save_file)
     elif build_option == 2:        # cluster

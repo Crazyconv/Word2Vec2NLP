@@ -1,4 +1,6 @@
 from bs4 import BeautifulSoup
+from nltk.tokenize import TweetTokenizer
+
 import re
 
 class CsvOption(object):
@@ -35,24 +37,32 @@ class Word2VecOption(object):
         self.context = context
         self.downsampling = downsampling
 
-def process(sentence, process_option, stop_words):
+def process(sentence, tknzr, process_option, stop_words):
     # remove html markup
     if process_option.rm_html:
         sentence = BeautifulSoup(sentence, "html.parser").get_text()
 
-    # remove punctuation and numbers
-    if process_option.rm_punc and process_option.rm_num:
-        sentence = re.sub("[^a-zA-Z]", " ", sentence)
-    elif process_option.rm_punc:
-        sentence = re.sub("[^a-zA-Z0-9]", " ", sentence)
-    elif process_option.rm_num:
-        sentence = re.sub("[0-9]", " ", sentence)
+    # # remove punctuation and numbers
+    # if process_option.rm_punc and process_option.rm_num:
+    #     sentence = re.sub("[^a-zA-Z]", " ", sentence)
+    # elif process_option.rm_punc:
+    #     sentence = re.sub("[^a-zA-Z0-9]", " ", sentence)
+    # elif process_option.rm_num:
+    #     sentence = re.sub("[0-9]", " ", sentence)
     
-    # lower case and tokenization
-    if process_option.lower_case:
-        sentence = sentence.lower()
+    # # lower case and tokenization
+    # if process_option.lower_case:
+    #     sentence = sentence.lower()
 
-    words = sentence.split()
+    # words = sentence.split()
+
+    #################################################################
+    words = tknzr.tokenize(sentence);
+    punctuation = set([';', ':', ',', '.', '!', '?', '\'', '"', \
+    "$", "@", "#", "%", "^", "&", "*", "(", ")", "[", "]", "{", "}"\
+    "-", "+", "_", "=", "<", ">"])
+    words = [word for word in words if not word in punctuation]
+
 
     # remove stop words
     if process_option.rm_stop_words:
@@ -60,9 +70,9 @@ def process(sentence, process_option, stop_words):
 
     return words
 
-def process_sentences(sentences, process_option, stop_words):
+def process_sentences(sentences, tknzr, process_option, stop_words):
     for sentence in sentences:
-        yield process(sentence, process_option, stop_words)
+        yield process(sentence, tknzr, process_option, stop_words)
 
 def word2sentence(word_docs):
     for words in word_docs:
