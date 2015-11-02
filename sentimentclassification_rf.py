@@ -14,8 +14,8 @@ import timeit
 
 from sentences import Sentences
 from util import *
-import wordvector
-import wordvector_parallel
+import docvector
+import docvector_parallel
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('sys.stdout')
@@ -34,7 +34,7 @@ def main(train_dir, test_dir):
     save_fv = True
     train_fv_name = "train_fv.bin"
     test_fv_name = "test_fv.bin"
-    build_option = 2
+    build_option = 1
     save_classifier = True
     classifier_name = "classifier/classifier.bin"
     to_normalize = True
@@ -59,13 +59,13 @@ def main(train_dir, test_dir):
     else:
         logger.info("start trainning word vector")
         start_time = timeit.default_timer()
-        model = wordvector.build_word_vector(train_sentences, w2v_option, save=True, save_file=model_name)
+        model = docvector.build_word_vector(train_sentences, w2v_option, save=True, save_file=model_name)
         logger.info("model %s trained in %.4lfs", model_name, timeit.default_timer() - start_time)
 
     # get doc vector
     logger.info("start building training set doc vector")
     start_time = timeit.default_timer()
-    train_fv = wordvector.build_doc_vector(train_dir, model, build_option, process_option, save_fv, train_fv_name, )
+    train_fv = docvector.build_doc_vector(train_dir, model, build_option, process_option, save_fv, train_fv_name, )
     print train_fv
     logger.info("training set doc vector built in %.4lfs", timeit.default_timer() - start_time)
     logger.info("training set doc vector saved to %s", train_fv_name)
@@ -85,7 +85,7 @@ def main(train_dir, test_dir):
     logger.info("start building test set doc vector")
     start_time = timeit.default_timer()
     test_sentences = Sentences(test_dir, csv_option, process_option)
-    test_fv = wordvector.build_doc_vector(test_dir, model, build_option, process_option, save_fv, test_fv_name)
+    test_fv = docvector.build_doc_vector(test_dir, model, build_option, process_option, save_fv, test_fv_name)
     print test_fv
     logger.info("test set doc vector built in %.4lfs", timeit.default_timer() - start_time)
     logger.info("test set doc vector saved to %s", test_fv_name)
