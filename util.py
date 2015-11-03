@@ -16,8 +16,8 @@ def process(sentence):
     if setting.process_option.rm_html:
         sentence = BeautifulSoup(sentence, "html.parser").get_text()
 
-    # # remove punctuation and numbers
-    # if setting.process_option.rm_punc and process_option.rm_num:
+    # remove punctuation and numbers
+    # if setting.process_option.rm_punc and setting.process_option.rm_num:
     #     sentence = re.sub("[^a-zA-Z]", " ", sentence)
     # elif setting.process_option.rm_punc:
     #     sentence = re.sub("[^a-zA-Z0-9]", " ", sentence)
@@ -32,10 +32,18 @@ def process(sentence):
 
     #################################################################
     words = tweet_tknzr.tokenize(sentence);
+
     punctuation = set([';', ':', ',', '.', '!', '?', '\'', '"', \
     "$", "@", "#", "%", "^", "&", "*", "(", ")", "[", "]", "{", "}"\
     "-", "+", "_", "=", "<", ">"])
     words = [word for word in words if not word in punctuation]
+    if setting.process_option.rm_punc and setting.process_option.rm_num:
+        words = [word for word in words if not word in punctuation and not word.isnumeric()]
+    elif setting.process_option.rm_punc:
+        words = [word for word in words if not word in punctuation]
+    elif setting.process_option.rm_num:
+        words = [word for word in words if not word.isnumeric()]
+    #################################################################
 
 
     # remove stop words
@@ -55,7 +63,10 @@ def get_word_vec_dict(model):
     return dic
 
 def document2sentences(document):
-    raw_sentences = sentence_tknzr.tokenize(document.decode('utf8').strip())
-    for raw_sentence in raw_sentences:
-        sentence = process(raw_sentence)
-        yield sentence
+    try:
+        raw_sentences = sentence_tknzr.tokenize(document.decode('utf8').strip())
+        for raw_sentence in raw_sentences:
+            sentence = process(raw_sentence)
+            yield sentence
+    except:
+        return
