@@ -38,3 +38,11 @@ csv_option = CsvOption(deli=",", title=["review", "sentiment"], \
     chunksize=100, review_name="review", sentiment_name="sentiment")
 process_option = ProcessOption(rm_html=True, rm_punc=True, rm_num=True, \
     lower_case=True, rm_stop_words=False)
+
+to_scale = False
+to_normalize = False
+
+save_fv = True
+train_fv_name = "train_fv.bin"
+test_fv_name = "test_fv.bin"
+build_option = 1

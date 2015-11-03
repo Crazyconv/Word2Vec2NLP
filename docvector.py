@@ -1,5 +1,4 @@
 from gensim.models import Word2Vec
-from nltk.corpus import stopwords
 
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
@@ -7,35 +6,9 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import scale
 from sklearn.preprocessing import normalize
-from nltk.tokenize import TweetTokenizer
 
-from sentences import Sentences
-from util import *
 import util
-
-import timeit
-import logging
-
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger('sys.stdout')
-
-
-def build_word_vector(sentences, w2v_option=Word2VecOption(), save=True, save_file="model.bin"):
-    num_features = w2v_option.num_features
-    min_word_count = w2v_option.min_word_count
-    num_workers = w2v_option.num_workers
-    context = w2v_option.context
-    downsampling = w2v_option.downsampling
-
-
-    model = Word2Vec(sentences, workers=num_workers, size=num_features, \
-        min_count=min_word_count, window=context, sample=downsampling, seed=1)
-    model.init_sims(replace=True)
-
-    if save:
-        model.save(save_file)
-
-    return model
+import setting
 
 def build_average_dv(docs, doc_num, model, save=True, save_file="doc_vector_ave.bin"):
     num_features = model.syn0.shape[1]
@@ -92,10 +65,7 @@ def build_cluster_dv(docs, doc_num, model, cluster_factor, num_cpus, save=True, 
     num_clusters = word_vectors.shape[0] / cluster_factor
     clustering = KMeans(n_clusters=num_clusters, n_jobs=100)
 
-    logger.info("start clustering")
-    start_time = timeit.default_timer()
     centroid_ids = clustering.fit_predict(word_vectors)
-    logger.info("finish clustering trained in %.4lfs", timeit.default_timer() - start_time)
 
     word_centroid_dic = dict(zip(model.index2word, centroid_ids))
     doc_vector = np.zeros((doc_num, num_clusters), dtype="float32")
@@ -114,30 +84,21 @@ def build_cluster_dv(docs, doc_num, model, cluster_factor, num_cpus, save=True, 
     return doc_vector
 
 
-def build_doc_vector(dir_name, model, build_option, process_option=ProcessOption(), \
-    save=True, save_file="doc_vector.bin", \
-    to_normalize = False, to_scale = False, cluster_factor=20, num_cpus=-2):
-    sentences = Sentences(dir_name)
-    docs = sentences.paragraph_iterator()
-    doc_num = sentences.doc_num
-    stop_words = set(stopwords.words("english"))
-    tknzr = TweetTokenizer(preserve_case=False)
-    post_docs = util.process_sentences(docs, tknzr, process_option, stop_words)
+def build_doc_vector(documents, model, build_option, \
+    save=True, save_file="doc_vector.bin", cluster_factor=20, num_cpus=-2):
+    doc_num = documents.doc_num
     if build_option == 1:        # average
-        doc_vector = build_average_dv(post_docs, doc_num, model, save, save_file)
+        doc_vector = build_average_dv(documents, doc_num, model, save, save_file)
     elif build_option == 2:        # cluster
-        doc_vector = build_av_tf_idf_dv(post_docs, doc_num, model, save, save_file)
+        doc_vector = build_av_tf_idf_dv(documents, doc_num, model, save, save_file)
     else:
-        doc_vector = build_cluster_dv(post_docs, doc_num, model, cluster_factor, num_cpus, save, save_file)
+        doc_vector = build_cluster_dv(documents, doc_num, model, cluster_factor, num_cpus, save, save_file)
 
-    if(normalize):
+    if(setting.to_normalize):
         doc_vector = normalize(doc_vector, copy=False)
-    if(scale):
-        doc_vector = scale(doc_vector, copy=True)
+    if(setting.to_scale):
+        doc_vector = scale(doc_vector, copy=False)
 
     return doc_vector
-
-
-
 
 # "/Users/Crazyconv/Conv/DEVELOPMENT/GitFolder/Word2Vec2NLP/dataset"    
