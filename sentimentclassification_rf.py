@@ -20,7 +20,7 @@ import docvector_parallel
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('sys.stdout')
 
-def main(train_dir, test_dir):
+def main(model_name, train_dir, test_dir):
 
     # these may be function parameters 
     w2v_option = Word2VecOption(num_features=300, min_word_count=40, \

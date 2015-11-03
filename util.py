@@ -1,43 +1,15 @@
 from bs4 import BeautifulSoup
 from nltk.tokenize import TweetTokenizer
+from nltk.corpus import stopwords
+import nltk.data
 
 import re
 
-class CsvOption(object):
-    def __init__(self, deli=",", title=["review", "sentiment"], \
-        chunksize=100, review_name="review", sentiment_name="sentiment"):
-        self.deli = deli
-        self.title = title
-        self.chunksize = chunksize
-        self.review_name = review_name
-        self.sentiment_name = sentiment_name
+sentence_tknzr = nltk.data.load('tokenizers/punkt/english.pickle')
+tweet_tknzr = TweetTokenizer(preserve_case=False)
+stop_words = set(stopwords.words("english"))
 
-class ProcessOption(object):
-    def __init__(self, rm_html=True, rm_punc=True, rm_num=True, lower_case=True, rm_stop_words=False):
-        self.rm_html = rm_html
-        self.rm_punc = rm_punc
-        self.rm_num = rm_num
-        self.lower_case = lower_case
-        self.rm_stop_words = rm_stop_words
-
-    def __str__(self):
-        return str({"rm_html": self.rm_html, \
-            "rm_punc": self.rm_punc, \
-            "rm_num": self.rm_num, \
-            "lower_case": self.lower_case, \
-            "rm_stop_words": self.rm_stop_words 
-            })
-
-class Word2VecOption(object):
-    def __init__(self, num_features=300, min_word_count=40, \
-        num_workers=4, context=10, downsampling=1e-3):
-        self.num_features = num_features
-        self.min_word_count = min_word_count
-        self.num_workers = num_workers
-        self.context = context
-        self.downsampling = downsampling
-
-def process(sentence, tknzr, process_option, stop_words):
+def process(sentence, process_option):
     # remove html markup
     if process_option.rm_html:
         sentence = BeautifulSoup(sentence, "html.parser").get_text()
@@ -57,7 +29,7 @@ def process(sentence, tknzr, process_option, stop_words):
     # words = sentence.split()
 
     #################################################################
-    words = tknzr.tokenize(sentence);
+    words = tweet_tknzr.tokenize(sentence);
     punctuation = set([';', ':', ',', '.', '!', '?', '\'', '"', \
     "$", "@", "#", "%", "^", "&", "*", "(", ")", "[", "]", "{", "}"\
     "-", "+", "_", "=", "<", ">"])
@@ -70,10 +42,6 @@ def process(sentence, tknzr, process_option, stop_words):
 
     return words
 
-def process_sentences(sentences, tknzr, process_option, stop_words):
-    for sentence in sentences:
-        yield process(sentence, tknzr, process_option, stop_words)
-
 def word2sentence(word_docs):
     for words in word_docs:
         yield " ".join(words)
@@ -83,3 +51,9 @@ def get_word_vec_dict(model):
     for word in model.index2word:
         dic[word] = model[word]
     return dic
+
+def document2sentences(document, process_option):
+    raw_sentences = tokenizer.tokenize(document.decode('utf8').strip())
+    for raw_sentence in raw_sentences:
+        sentence = process(raw_sentence, tweet_tknzr, process_option, stop_words)
+        yield sentence
