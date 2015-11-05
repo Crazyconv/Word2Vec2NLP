@@ -46,7 +46,4 @@ def main(dir_name, save=True, save_file="model.bin"):
 
 
 if __name__ == "__main__":
-    build_word_vector("/Users/Crazyconv/Conv/DEVELOPMENT/GitFolder/Word2Vec2NLP/dataset/all", True, "model.bin")
-    # with open("test.txt", 'w') as f:
-    #     for sentence in extract_sentences("/Users/Crazyconv/Conv/DEVELOPMENT/GitFolder/Word2Vec2NLP/dataset/all"):
-    #         print >> f, sentence
+    build_word_vector("./dataset/all", True, "./save/model.bin")

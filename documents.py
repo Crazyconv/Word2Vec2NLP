@@ -16,13 +16,12 @@ class Documents(object):
 
     def field_iterator(self, field):
         for file_name in os.listdir(self.dir_name):
-            if file_name.endswith(".csv"):
-                documents = pandas.read_csv(os.path.join(self.dir_name, file_name), \
-                    delimiter=setting.csv_option.deli, names=setting.csv_option.title, \
-                    iterator=True, chunksize=setting.csv_option.chunksize)
-                for chunk in documents:
-                    for content in chunk[field]:
-                        yield content
+            documents = pandas.read_csv(os.path.join(self.dir_name, file_name), \
+                delimiter=setting.csv_option.deli, names=setting.csv_option.title, \
+                iterator=True, chunksize=setting.csv_option.chunksize)
+            for chunk in documents:
+                for content in chunk[field]:
+                    yield content
 
     def get_num_doc(self):
         num = 0
