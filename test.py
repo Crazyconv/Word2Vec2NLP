@@ -1,103 +1,64 @@
-# from sentences import Sentences
+import setting
+import json
 
-# sentences = Sentences("/Users/Crazyconv/Conv/DEVELOPMENT/GitFolder/Word2Vec2NLP/dataset/train")
-# i = 0
-# j = 5
-# for line in sentences.paragraph_iterator():
-#     i += 1
-
-# print i
-
-# from util import *
-# process_option = ProcessOption()
-# print str(process_option)
-
-# from multiprocessing import Manager, Process
-# import multiprocessing as mp
-# import numpy as np
-
-# def process(wordset, docs, index):
-#     doc_vector = np.frombuffer(dv).reshape((3,3))
-#     for word in docs[index]:
-#         if word in wordset:
-#             doc_vector[index] += wordset[word]
-
-
-# if __name__ == '__main__':
-#     doc_vector = np.zeros((9,1), dtype="float32")
-#     wordset = {"1": np.array([1,2,3]), "2": np.array([2,3,4])}
-#     docs = [["1", "2"], ["3"], ["2", "3"]]
-
-#     manager = Manager()
-#     ws = manager.dict(wordset)
-#     ds = manager.list(docs)
-
-#     # p = [0,0,0]
-#     # for i in range(3):
-#     #     p[i] = Process(target=process, args=(ws, ds, dv, i))
-#     #     p[i].start()
-
-#     # for i in range(3):
-#     #     p[i].join()
-
-#     dv = mp.Array('d', doc_vector, lock=False)
-#     print np.frombuffer(dv)
-#     # print dv
-#     pool = mp.Pool(3)
-    
-#     for i in range(3):
-#         pool.apply_async(process, [ws, ds, i,])
-
-#     pool.close()
-#     pool.join()
-
-#     # print doc_vector
-#     print np.frombuffer(dv).reshape((3, 3))
-
-
-from multiprocessing import Manager, Process
-import multiprocessing as mp
 import numpy as np
-import mputil
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import BernoulliNB
+from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import LinearSVC
+from sklearn.cross_validation import cross_val_score
+from sklearn import metrics
 
-def process(wordset, docs, index):
-    doc_vector = np.frombuffer(mputil.toShare).reshape((3,3))
-    for word in docs[index]:
-        if word in wordset:
-            doc_vector[index] += wordset[word]
+import logging
+import setting
+import json
+import docvector
 
-def initprocess(share):
-    mputil.toShare = share
 
-def main():
-    doc_vector = np.zeros((9,1), dtype="float32")
-    wordset = {"1": np.array([1,2,3]), "2": np.array([2,3,4])}
-    docs = [["1", "2"], ["3"], ["2", "3"]]
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('sys.stdout')
 
-    manager = Manager()
-    ws = manager.dict(wordset)
-    ds = manager.list(docs)
+with open(setting.sentic_corpus, 'r') as f:
+    sentic_dic = json.load(f)
 
-    # p = [0,0,0]
-    # for i in range(3):
-    #     p[i] = Process(target=process, args=(ws, ds, dv, i))
-    #     p[i].start()
+train_fv, train_label, test_fv, test_label = docvector.build_nlp_sn('./dataset/train.p', './dataset/test.p', sentic_dic)
 
-    # for i in range(3):
-    #     p[i].join()
+for option in range(3):
+    logger.debug("===================== %s =====================", setting.classifiers[option])
 
-    dv = mp.Array('d', doc_vector, lock=False)
-    print np.frombuffer(dv).reshape((3, 3))
-    pool = mp.Pool(initializer=initprocess, initargs=[dv])
-    
-    for i in range(3):
-        pool.apply_async(process, [ws, ds, i,])
+    accuracy = 0
+    precision = 0
+    recall = 0
+    fscore = 0
+    if(option == 0): # random forest
+        classifier = RandomForestClassifier(n_estimators=100, n_jobs=100)
+    elif(option == 1): # SVM
+        classifier = LinearSVC()
+    else: 
+        classifier = BernoulliNB()
 
-    pool.close()
-    pool.join()
 
-    # print doc_vector
-    print np.frombuffer(dv).reshape((3, 3))
+    classifier.fit(train_fv, train_label)
+    predicted_sentiment = classifier.predict(test_fv)
 
-if __name__ == '__main__':
-    main()
+    single_accuracy = np.mean(predicted_sentiment == test_label)
+    report = metrics.classification_report(test_label, \
+            predicted_sentiment, target_names=['0', '1'])
+    reports = report.split()[-4: -1]
+
+    accuracy += single_accuracy
+    precision += float(reports[0])
+    recall += float(reports[1])
+    fscore += float(reports[2])
+    print "accuracy: ", single_accuracy
+    print report
+
+    print "********** average **********"
+    print "accuracy: ", accuracy
+    print "precision: ", precision
+    print "recall: ", recall
+    print "fscore: ", fscore
+    print "*****************************"
+
+
