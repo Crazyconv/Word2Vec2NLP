@@ -9,6 +9,7 @@ all in python, check requirements.txt for libraries used
 
 * rename `dataset_used` as `dataset`
 * create a directory called `save` in root
+* run `python wordvector.py` to train and build the word vector
 * run `python docvector.py` to generate feature vectors (training and testing) for different algorithms
   * word2vec
   * word2vec + senticNet
