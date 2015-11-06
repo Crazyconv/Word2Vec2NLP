@@ -40,12 +40,13 @@ train_fv_name = "train_fv.bin"
 test_fv_name = "test_fv.bin"
 build_option = 0
 
-build_methods = ["average word vector", "nlp", "average word vector + senticNet", "nlp + senticNet"]
+build_methods = ["average word vector", "average word vector + senticNet", "nlp", "nlp + senticNet"]
 classifiers = ["random forest", "svm", "naive bayes"]
 
 corpus = "./dataset/all"
 saveprefix = './save/'
 dbprefix = './dataset/Fold'
+fsprefix = './dataset/FeatureSet'
 model_name = './save/model.bin'
 pre_model_name = "./dataset/GoogleNews-vectors-negative300.bin.gz"
 sentic_corpus = './dataset/senticNet.json'

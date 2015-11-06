@@ -1,64 +1,42 @@
-import setting
-import json
+import csv, nltk, random
+from nltk.stem import *
+import string
+import pickle
 
-import numpy as np
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.naive_bayes import BernoulliNB
-from sklearn.naive_bayes import GaussianNB
-from sklearn.svm import LinearSVC
-from sklearn.cross_validation import cross_val_score
-from sklearn import metrics
-
-import logging
-import setting
-import json
-import docvector
+def read_file(filepath):
+    with open(filepath, 'r') as file:
+        reader = csv.reader(file)
+        return [(str(line[0]).translate(None, string.punctuation).decode("utf8"), line[1]) for line in reader if line[1] in ['0','1']]
 
 
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger('sys.stdout')
+def tokenize(dataset):
+    stemmer=SnowballStemmer('english')
+    return [([stemmer.stem(word) for word in nltk.word_tokenize(sent)], label) for (sent, label) in dataset]
 
-with open(setting.sentic_corpus, 'r') as f:
-    sentic_dic = json.load(f)
+data = [["set2.csv", "set3.csv", "set1.csv"],\
+["set1.csv", "set3.csv", "set2.csv"],\
+["set1.csv", "set2.csv", "set3.csv"],]
 
-train_fv, train_label, test_fv, test_label = docvector.build_nlp_sn('./dataset/train.p', './dataset/test.p', sentic_dic)
+for i in range(3):
+    datum = data[i]
+    tweets = read_file(datum[0])
+    tweets_tokens = tokenize(tweets)
+    all_tokens = [token for (tweet, label) in tweets_tokens for token in tweet]
+    features = [x for (x,freq) in nltk.FreqDist(all_tokens).most_common() if not x in nltk.corpus.stopwords.words('english')]
+    feature_set = [({feature: feature in tokens for feature in features }, label) for (tokens, label) in tweets_tokens]
 
-for option in range(3):
-    logger.debug("===================== %s =====================", setting.classifiers[option])
+    tweets = read_file(datum[1])
+    tweets_tokens = tokenize(tweets)
+    all_tokens = [token for (tweet, label) in tweets_tokens for token in tweet]
+    features = [x for (x,freq) in nltk.FreqDist(all_tokens).most_common() if not x in nltk.corpus.stopwords.words('english')]
+    feature_set.extend([({feature: feature in tokens for feature in features }, label) for (tokens, label) in tweets_tokens])
 
-    accuracy = 0
-    precision = 0
-    recall = 0
-    fscore = 0
-    if(option == 0): # random forest
-        classifier = RandomForestClassifier(n_estimators=100, n_jobs=100)
-    elif(option == 1): # SVM
-        classifier = LinearSVC()
-    else: 
-        classifier = BernoulliNB()
+    pickle.dump(feature_set, open("./dataset/FeatureSet"+`i`+'/train.p', "wb" ) )
 
+    tweets = read_file(datum[2])
+    tweets_tokens = tokenize(tweets)
+    all_tokens = [token for (tweet, label) in tweets_tokens for token in tweet]
+    features = [x for (x,freq) in nltk.FreqDist(all_tokens).most_common() if not x in nltk.corpus.stopwords.words('english')]
+    feature_set = [({feature: feature in tokens for feature in features }, label) for (tokens, label) in tweets_tokens]
 
-    classifier.fit(train_fv, train_label)
-    predicted_sentiment = classifier.predict(test_fv)
-
-    single_accuracy = np.mean(predicted_sentiment == test_label)
-    report = metrics.classification_report(test_label, \
-            predicted_sentiment, target_names=['0', '1'])
-    reports = report.split()[-4: -1]
-
-    accuracy += single_accuracy
-    precision += float(reports[0])
-    recall += float(reports[1])
-    fscore += float(reports[2])
-    print "accuracy: ", single_accuracy
-    print report
-
-    print "********** average **********"
-    print "accuracy: ", accuracy
-    print "precision: ", precision
-    print "recall: ", recall
-    print "fscore: ", fscore
-    print "*****************************"
-
-
+    pickle.dump(feature_set, open("./dataset/FeatureSet"+`i`+'/test.p', "wb" ))

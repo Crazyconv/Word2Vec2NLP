@@ -1,0 +1,30 @@
+=========================== ACCURACY ==========================
+                        random forest   svm         naïve bayes
+            word2vec    0.9422          0.9178      0.9089
+word2vec + senticNet    0.9444          0.9556      0.9133
+                 nlp    0.9556          0.9489      0.9467
+     nlp + senticNet    0.9444          0.9467      0.7311
+
+
+=========================== PRECISION =========================            
+                        random forest   svm         naïve bayes
+            word2vec    0.9433          0.9233      0.9167
+word2vec + senticNet    0.9500          0.9567      0.9200
+                 nlp    0.9600          0.9533      0.9533
+     nlp + senticNet    0.9467          0.9467      0.7867
+
+
+=========================== RECALL ============================            
+                        random forest   svm         naïve bayes
+            word2vec    0.9433          0.9200      0.9067
+word2vec + senticNet    0.9433          0.9533      0.9133
+                 nlp    0.9533          0.9500      0.9433
+     nlp + senticNet    0.9467          0.9467      0.7300
+
+
+=========================== F-SCORE ===========================            
+                        random forest   svm         naïve bayes
+            word2vec    0.9433          0.9200      0.9067
+word2vec + senticNet    0.9433          0.9533      0.9133
+                 nlp    0.9533          0.9500      0.9433
+     nlp + senticNet    0.9467          0.9467      0.7067

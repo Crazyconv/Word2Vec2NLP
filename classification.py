@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('sys.stdout')
 
 def classification(option):
-    for i in range(2,3):
+    for i in range(4):
         logger.debug("========== %s ==========", setting.build_methods[i])
         accuracy = 0
         precision = 0
@@ -32,10 +32,10 @@ def classification(option):
                 classifier = GaussianNB()
 
             train_fv = np.load(setting.saveprefix + "train_fv_" + `i` + "_" + `j` + ".npy")
-            train_label = np.load(setting.saveprefix + "train_label_" + `i` + "_" + `j` + ".npy")
+            train_label = np.load(setting.saveprefix + "train_label_" + `j` + ".npy")
             classifier.fit(train_fv, train_label)
             test_fv = np.load(setting.saveprefix + "test_fv_" + `i` + "_" + `j` + ".npy")
-            test_label = np.load(setting.saveprefix + "test_label_" + `i` + "_" + `j` + ".npy")
+            test_label = np.load(setting.saveprefix + "test_label_" + `j` + ".npy")
             predicted_sentiment = classifier.predict(test_fv)
 
             single_accuracy = np.mean(predicted_sentiment == test_label)

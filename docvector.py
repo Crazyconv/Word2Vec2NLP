@@ -19,7 +19,7 @@ import pickle
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('sys.stdout')
 
-def build_average_dv(docs, doc_num, model, sentic_dic, save, save_file):
+def build_average_dv(docs, doc_num, model, save, save_file):
     num_features = model.syn0.shape[1]
     doc_vector = np.zeros((doc_num, num_features), dtype="float32")
     word_set = set(model.index2word)
@@ -39,7 +39,7 @@ def build_average_dv(docs, doc_num, model, sentic_dic, save, save_file):
 
     return doc_vector
 
-def build_av_tf_idf_dv(docs, doc_num, model, sentic_dic, save, save_file):
+def build_av_tf_idf_dv(docs, doc_num, model, save, save_file):
     docs = list(docs)
     vectorizer = CountVectorizer()
     tfidf_transformer = TfidfTransformer()
@@ -100,14 +100,31 @@ def build_av_sn(docs, doc_num, model, sentic_dic, save, save_file):
 
     return doc_vector
 
-# def build_nlp(docs, doc_num, model, sentic_dic, save, save_file):
+def build_nlp(train_file_name, test_file_name, sentic_dic, save, save_train_file, save_test_file):
+    v = DictVectorizer(sparse=False)
 
-def build_nlp_sn(train_file_name, test_file_name, sentic_dic):
+    with open(train_file_name, 'rb') as f:
+        feature_set = pickle.load(f)
+    words = [words for (words, label) in feature_set]
+    train_fv = v.fit_transform(words)
+
+    with open(test_file_name, 'rb') as f:
+        feature_set = pickle.load(f)
+    words = [words for (words, label) in feature_set]
+    test_fv = v.transform(words)
+
+    if save:
+        np.save(save_train_file, train_fv)
+        np.save(save_test_file, test_fv)
+
+    return train_fv, test_fv
+
+def build_nlp_sn(train_file_name, test_file_name, sentic_dic, save, save_train_file, save_test_file):
+    v = DictVectorizer(sparse=False)
+
     fv_dic = []
     with open(train_file_name, 'rb') as f:
         feature_set = pickle.load(f)
-    train_label = np.array([label for (words, label) in feature_set])
-
     for words, _ in feature_set:
         single_dic = {}
         for word in words:
@@ -118,13 +135,11 @@ def build_nlp_sn(train_file_name, test_file_name, sentic_dic):
                     single_dic[word] = sentic_dic[word+"#a"]
         fv_dic.append(single_dic)
 
-    v = DictVectorizer(sparse=False)
     train_fv = v.fit_transform(fv_dic)
 
     fv_dic = []
     with open(test_file_name, 'rb') as f:
         feature_set = pickle.load(f)
-    test_label = np.array([label for (words, label) in feature_set])
     for words, _ in feature_set:
         single_dic = {}
         for word in words:
@@ -136,19 +151,30 @@ def build_nlp_sn(train_file_name, test_file_name, sentic_dic):
         fv_dic.append(single_dic)
 
     test_fv = v.transform(fv_dic)
+    if save:
+        np.save(save_train_file, train_fv)
+        np.save(save_test_file, test_fv)
 
-    return train_fv, train_label, test_fv, test_label
+    return train_fv, test_fv
 
 
-def build_doc_vector(documents, model, build_option, sentic_dic,\
-    save=True, save_file="doc_vector.bin", cluster_factor=20, num_cpus=-2):
-    doc_num = documents.doc_num
+def build_doc_vector(build_option, sentic_dic, documents=None, model=None, train_file_name=None, test_file_name=None, \
+    save=True, save_file="doc_vector.bin", save_file2="doc_vector.bin"):
+
+    doc_num = 1
+    if not documents is None:
+        doc_num = documents.doc_num
+
     if build_option == 0:        # average
-        doc_vector = build_average_dv(documents, doc_num, model, sentic_dic, save, save_file)
-    elif build_option == 1:        # cluster
-        doc_vector = build_av_tf_idf_dv(documents, doc_num, model, sentic_dic, save, save_file)
-    elif build_option == 2:        # average + senticNet
+        doc_vector = build_average_dv(documents, doc_num, model, save, save_file)
+    elif build_option == 1:        # average + senticNet
         doc_vector = build_av_sn(documents, doc_num, model, sentic_dic, save, save_file)
+    elif build_option == 2:        #nlp 
+        doc_vector = build_nlp(train_file_name, test_file_name, sentic_dic, save, save_file, save_file2)
+    elif build_option == 3:        #nlp +senticNet
+        doc_vector = build_nlp_sn(train_file_name, test_file_name, sentic_dic, save, save_file, save_file2)
+    else:     # average+ tf-idf
+        doc_vector = build_av_tf_idf_dv(documents, doc_num, model, save, save_file)
 
     if(setting.to_normalize):
         doc_vector = normalize(doc_vector, copy=False)
@@ -157,37 +183,32 @@ def build_doc_vector(documents, model, build_option, sentic_dic,\
 
     return doc_vector
 
-def transform_nlp(file_name):
-    with open(file_name, 'rb') as f:
-        feature_set = pickle.load(f)
-    words = [words for (words, label) in feature_set]
-    
-    v = DictVectorizer()
-    fv = v.fit_transform(words)
+if __name__ == "__main__":
+    model = Word2Vec.load(setting.model_name)
+    with open(setting.sentic_corpus, 'r') as f:
+        sentic_dic = json.load(f)
 
-    label = np.array([label for (words, label) in feature_set])
-    return fv, label
-
-# if __name__ == "__main__":
-#     model = Word2Vec.load(setting.model_name)
-#     with open(setting.sentic_corpus, 'r') as f:
-#         sentic_dic = json.load(f)
-
-#     for i in range(3):
-#         logger.debug("use %s to build doc vector", setting.build_methods[i])
-#         for j in range(3):
-#             if(i == 2):
-
-#             # train
-#             documents = Documents(setting.dbprefix + `j` + "/train")
-#             build_doc_vector(documents, model, i, sentic_dic, True, setting.saveprefix + "train_fv_" + `i` + "_" + `j`)
-#             if(i == 0):
-#                 label = np.array(list(documents.field_iterator(setting.csv_option.sentiment_name)))
-#                 np.save(setting.saveprefix + "train_label_" + `j`, label)
-#             # test
-#             documents = Documents(setting.dbprefix + `j` + "/test")
-#             fv = build_doc_vector(documents, model, i, sentic_dic, True, setting.saveprefix + "test_fv_" + `i` + "_" + `j`)
-#             if(i == 0):
-#                 label = np.array(list(documents.field_iterator(setting.csv_option.sentiment_name)))
-#                 np.save(setting.saveprefix + "test_label_" + `j`, label)
+    for i in range(4):
+        logger.debug("use %s to build doc vector", setting.build_methods[i])
+        for j in range(3):
+            if(i <= 1):
+                # train
+                documents = Documents(setting.dbprefix + `j` + "/train")
+                train_fv = build_doc_vector(i, sentic_dic, documents=documents, model=model, \
+                    save_file=setting.saveprefix + "train_fv_" + `i` + "_" + `j`)
+                if(i == 0):
+                    train_label = np.array(list(documents.field_iterator(setting.csv_option.sentiment_name)))
+                    np.save(setting.saveprefix + "train_label_" + `j`, train_label)
+                # test
+                documents = Documents(setting.dbprefix + `j` + "/test")
+                test_fv = build_doc_vector(i, sentic_dic, documents=documents, model=model, \
+                    save_file=setting.saveprefix + "test_fv_" + `i` + "_" + `j`)
+                if(i == 0):
+                    test_label = np.array(list(documents.field_iterator(setting.csv_option.sentiment_name)))
+                    np.save(setting.saveprefix + "test_label_" + `j`, test_label)
+            else:
+                train_fv, test_fv = build_doc_vector(i, sentic_dic, \
+                    train_file_name=setting.fsprefix + `j` + "/train.p", test_file_name=setting.fsprefix + `j` + "/test.p", \
+                    save_file=setting.saveprefix + "train_fv_" + `i` + "_" + `j`, \
+                    save_file2=setting.saveprefix + "test_fv_" + `i` + "_" + `j`)
 

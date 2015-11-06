@@ -1,0 +1,375 @@
+DEBUG:sys.stdout:===================== random forest =====================
+DEBUG:sys.stdout:========== average word vector ==========
+accuracy:  0.946666666667
+             precision    recall  f1-score   support
+
+          0       0.99      0.92      0.95        84
+          1       0.90      0.98      0.94        66
+
+avg / total       0.95      0.95      0.95       150
+
+accuracy:  0.92
+             precision    recall  f1-score   support
+
+          0       0.94      0.89      0.91        70
+          1       0.90      0.95      0.93        80
+
+avg / total       0.92      0.92      0.92       150
+
+accuracy:  0.96
+             precision    recall  f1-score   support
+
+          0       0.94      0.99      0.96        79
+          1       0.99      0.93      0.96        71
+
+avg / total       0.96      0.96      0.96       150
+
+********** average **********
+accuracy:  0.942222222222
+precision:  0.943333333333
+recall:  0.943333333333
+fscore:  0.943333333333
+*****************************
+DEBUG:sys.stdout:========== average word vector + senticNet ==========
+accuracy:  0.946666666667
+             precision    recall  f1-score   support
+
+          0       0.99      0.92      0.95        84
+          1       0.90      0.98      0.94        66
+
+avg / total       0.95      0.95      0.95       150
+
+accuracy:  0.933333333333
+             precision    recall  f1-score   support
+
+          0       0.97      0.89      0.93        70
+          1       0.91      0.97      0.94        80
+
+avg / total       0.94      0.93      0.93       150
+
+accuracy:  0.953333333333
+             precision    recall  f1-score   support
+
+          0       0.93      0.99      0.96        79
+          1       0.98      0.92      0.95        71
+
+avg / total       0.96      0.95      0.95       150
+
+********** average **********
+accuracy:  0.944444444444
+precision:  0.95
+recall:  0.943333333333
+fscore:  0.943333333333
+*****************************
+DEBUG:sys.stdout:========== nlp ==========
+accuracy:  0.953333333333
+             precision    recall  f1-score   support
+
+          0       1.00      0.92      0.96        84
+          1       0.90      1.00      0.95        66
+
+avg / total       0.96      0.95      0.95       150
+
+accuracy:  0.933333333333
+             precision    recall  f1-score   support
+
+          0       0.98      0.87      0.92        70
+          1       0.90      0.99      0.94        80
+
+avg / total       0.94      0.93      0.93       150
+
+accuracy:  0.98
+             precision    recall  f1-score   support
+
+          0       0.96      1.00      0.98        79
+          1       1.00      0.96      0.98        71
+
+avg / total       0.98      0.98      0.98       150
+
+********** average **********
+accuracy:  0.955555555556
+precision:  0.96
+recall:  0.953333333333
+fscore:  0.953333333333
+*****************************
+DEBUG:sys.stdout:========== nlp + senticNet ==========
+accuracy:  0.926666666667
+             precision    recall  f1-score   support
+
+          0       0.95      0.92      0.93        84
+          1       0.90      0.94      0.92        66
+
+avg / total       0.93      0.93      0.93       150
+
+accuracy:  0.926666666667
+             precision    recall  f1-score   support
+
+          0       0.97      0.87      0.92        70
+          1       0.90      0.97      0.93        80
+
+avg / total       0.93      0.93      0.93       150
+
+accuracy:  0.98
+             precision    recall  f1-score   support
+
+          0       0.96      1.00      0.98        79
+          1       1.00      0.96      0.98        71
+
+avg / total       0.98      0.98      0.98       150
+
+********** average **********
+accuracy:  0.944444444444
+precision:  0.946666666667
+recall:  0.946666666667
+fscore:  0.946666666667
+*****************************
+DEBUG:sys.stdout:===================== svm =====================
+DEBUG:sys.stdout:========== average word vector ==========
+accuracy:  0.946666666667
+             precision    recall  f1-score   support
+
+          0       0.99      0.92      0.95        84
+          1       0.90      0.98      0.94        66
+
+avg / total       0.95      0.95      0.95       150
+
+accuracy:  0.906666666667
+             precision    recall  f1-score   support
+
+          0       0.92      0.87      0.90        70
+          1       0.89      0.94      0.91        80
+
+avg / total       0.91      0.91      0.91       150
+
+accuracy:  0.9
+             precision    recall  f1-score   support
+
+          0       0.85      0.99      0.91        79
+          1       0.98      0.80      0.88        71
+
+avg / total       0.91      0.90      0.90       150
+
+********** average **********
+accuracy:  0.917777777778
+precision:  0.923333333333
+recall:  0.92
+fscore:  0.92
+*****************************
+DEBUG:sys.stdout:========== average word vector + senticNet ==========
+accuracy:  0.953333333333
+             precision    recall  f1-score   support
+
+          0       1.00      0.92      0.96        84
+          1       0.90      1.00      0.95        66
+
+avg / total       0.96      0.95      0.95       150
+
+accuracy:  0.94
+             precision    recall  f1-score   support
+
+          0       0.98      0.89      0.93        70
+          1       0.91      0.99      0.95        80
+
+avg / total       0.94      0.94      0.94       150
+
+accuracy:  0.973333333333
+             precision    recall  f1-score   support
+
+          0       0.96      0.99      0.97        79
+          1       0.99      0.96      0.97        71
+
+avg / total       0.97      0.97      0.97       150
+
+********** average **********
+accuracy:  0.955555555556
+precision:  0.956666666667
+recall:  0.953333333333
+fscore:  0.953333333333
+*****************************
+DEBUG:sys.stdout:========== nlp ==========
+accuracy:  0.946666666667
+             precision    recall  f1-score   support
+
+          0       0.99      0.92      0.95        84
+          1       0.90      0.98      0.94        66
+
+avg / total       0.95      0.95      0.95       150
+
+accuracy:  0.933333333333
+             precision    recall  f1-score   support
+
+          0       0.98      0.87      0.92        70
+          1       0.90      0.99      0.94        80
+
+avg / total       0.94      0.93      0.93       150
+
+accuracy:  0.966666666667
+             precision    recall  f1-score   support
+
+          0       0.95      0.99      0.97        79
+          1       0.99      0.94      0.96        71
+
+avg / total       0.97      0.97      0.97       150
+
+********** average **********
+accuracy:  0.948888888889
+precision:  0.953333333333
+recall:  0.95
+fscore:  0.95
+*****************************
+DEBUG:sys.stdout:========== nlp + senticNet ==========
+accuracy:  0.94
+             precision    recall  f1-score   support
+
+          0       0.99      0.90      0.94        84
+          1       0.89      0.98      0.94        66
+
+avg / total       0.94      0.94      0.94       150
+
+accuracy:  0.926666666667
+             precision    recall  f1-score   support
+
+          0       0.97      0.87      0.92        70
+          1       0.90      0.97      0.93        80
+
+avg / total       0.93      0.93      0.93       150
+
+accuracy:  0.973333333333
+             precision    recall  f1-score   support
+
+          0       0.96      0.99      0.97        79
+          1       0.99      0.96      0.97        71
+
+avg / total       0.97      0.97      0.97       150
+
+********** average **********
+accuracy:  0.946666666667
+precision:  0.946666666667
+recall:  0.946666666667
+fscore:  0.946666666667
+*****************************
+DEBUG:sys.stdout:===================== naive bayes =====================
+DEBUG:sys.stdout:========== average word vector ==========
+accuracy:  0.96
+             precision    recall  f1-score   support
+
+          0       0.99      0.94      0.96        84
+          1       0.93      0.98      0.96        66
+
+avg / total       0.96      0.96      0.96       150
+
+accuracy:  0.893333333333
+             precision    recall  f1-score   support
+
+          0       0.86      0.93      0.89        70
+          1       0.93      0.86      0.90        80
+
+avg / total       0.90      0.89      0.89       150
+
+accuracy:  0.873333333333
+             precision    recall  f1-score   support
+
+          0       0.81      0.99      0.89        79
+          1       0.98      0.75      0.85        71
+
+avg / total       0.89      0.87      0.87       150
+
+********** average **********
+accuracy:  0.908888888889
+precision:  0.916666666667
+recall:  0.906666666667
+fscore:  0.906666666667
+*****************************
+DEBUG:sys.stdout:========== average word vector + senticNet ==========
+accuracy:  0.926666666667
+             precision    recall  f1-score   support
+
+          0       1.00      0.87      0.93        84
+          1       0.86      1.00      0.92        66
+
+avg / total       0.94      0.93      0.93       150
+
+accuracy:  0.9
+             precision    recall  f1-score   support
+
+          0       0.95      0.83      0.89        70
+          1       0.87      0.96      0.91        80
+
+avg / total       0.91      0.90      0.90       150
+
+accuracy:  0.913333333333
+             precision    recall  f1-score   support
+
+          0       0.93      0.90      0.92        79
+          1       0.89      0.93      0.91        71
+
+avg / total       0.91      0.91      0.91       150
+
+********** average **********
+accuracy:  0.913333333333
+precision:  0.92
+recall:  0.913333333333
+fscore:  0.913333333333
+*****************************
+DEBUG:sys.stdout:========== nlp ==========
+accuracy:  0.953333333333
+             precision    recall  f1-score   support
+
+          0       1.00      0.92      0.96        84
+          1       0.90      1.00      0.95        66
+
+avg / total       0.96      0.95      0.95       150
+
+accuracy:  0.933333333333
+             precision    recall  f1-score   support
+
+          0       0.98      0.87      0.92        70
+          1       0.90      0.99      0.94        80
+
+avg / total       0.94      0.93      0.93       150
+
+accuracy:  0.953333333333
+             precision    recall  f1-score   support
+
+          0       0.93      0.99      0.96        79
+          1       0.98      0.92      0.95        71
+
+avg / total       0.96      0.95      0.95       150
+
+********** average **********
+accuracy:  0.946666666667
+precision:  0.953333333333
+recall:  0.943333333333
+fscore:  0.943333333333
+*****************************
+DEBUG:sys.stdout:========== nlp + senticNet ==========
+accuracy:  0.513333333333
+             precision    recall  f1-score   support
+
+          0       0.79      0.18      0.29        84
+          1       0.47      0.94      0.63        66
+
+avg / total       0.65      0.51      0.44       150
+
+accuracy:  0.86
+             precision    recall  f1-score   support
+
+          0       0.92      0.77      0.84        70
+          1       0.82      0.94      0.88        80
+
+avg / total       0.87      0.86      0.86       150
+
+accuracy:  0.82
+             precision    recall  f1-score   support
+
+          0       0.91      0.73      0.81        79
+          1       0.76      0.92      0.83        71
+
+avg / total       0.84      0.82      0.82       150
+
+********** average **********
+accuracy:  0.731111111111
+precision:  0.786666666667
+recall:  0.73
+fscore:  0.706666666667
+*****************************
