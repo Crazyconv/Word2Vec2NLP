@@ -38,4 +38,10 @@ to_normalize = False
 save_fv = True
 train_fv_name = "train_fv.bin"
 test_fv_name = "test_fv.bin"
-build_option = 1
+build_option = 0
+
+build_methods = ["average word vector", "nlp", "average word vector + senticNet", "nlp + senticNet"]
+classifiers = ["random forest", "svm", "naive bayes"]
+saveprefix = './save/'
+dbprefix = './dataset/Fold'
+model_name = './save/model.bin'

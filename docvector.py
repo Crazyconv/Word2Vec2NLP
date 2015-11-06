@@ -9,6 +9,13 @@ from sklearn.preprocessing import normalize
 
 import util
 import setting
+from documents import Documents
+
+import logging
+import timeit
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('sys.stdout')
 
 def build_average_dv(docs, doc_num, model, save=True, save_file="doc_vector_ave.bin"):
     num_features = model.syn0.shape[1]
@@ -60,39 +67,13 @@ def build_av_tf_idf_dv(docs, doc_num, model, save=True, save_file="doc_vector_tf
 
     return doc_vector
 
-def build_cluster_dv(docs, doc_num, model, cluster_factor, num_cpus, save=True, save_file="doc_vector_cluster.bin"):
-    word_vectors = model.syn0
-    num_clusters = word_vectors.shape[0] / cluster_factor
-    clustering = KMeans(n_clusters=num_clusters, n_jobs=100)
-
-    centroid_ids = clustering.fit_predict(word_vectors)
-
-    word_centroid_dic = dict(zip(model.index2word, centroid_ids))
-    doc_vector = np.zeros((doc_num, num_clusters), dtype="float32")
-
-    index = 0
-    for words in docs:
-        for word in words:
-            if word in word_centroid_dic:
-                centroid_id = word_centroid_dic[word]
-                doc_vector[index][centroid_id] += 1
-        index += 1
-
-    if save:
-        np.save(save_file, doc_vector)
-
-    return doc_vector
-
-
 def build_doc_vector(documents, model, build_option, \
     save=True, save_file="doc_vector.bin", cluster_factor=20, num_cpus=-2):
     doc_num = documents.doc_num
-    if build_option == 1:        # average
+    if build_option == 0:        # average
         doc_vector = build_average_dv(documents, doc_num, model, save, save_file)
-    elif build_option == 2:        # cluster
+    elif build_option == 1:        # cluster
         doc_vector = build_av_tf_idf_dv(documents, doc_num, model, save, save_file)
-    else:
-        doc_vector = build_cluster_dv(documents, doc_num, model, cluster_factor, num_cpus, save, save_file)
 
     if(setting.to_normalize):
         doc_vector = normalize(doc_vector, copy=False)
@@ -101,4 +82,22 @@ def build_doc_vector(documents, model, build_option, \
 
     return doc_vector
 
-# "/Users/Crazyconv/Conv/DEVELOPMENT/GitFolder/Word2Vec2NLP/dataset"    
+if __name__ == "__main__":
+    model = Word2Vec.load(setting.model_name)
+
+    for i in range(2):
+        logger.debug("use %s to build doc vector", setting.build_methods[i])
+        for j in range(3):
+            # train
+            documents = Documents(setting.dbprefix + `j` + "/train")
+            fv = build_doc_vector(documents, model, i, True, setting.saveprefix + "train_fv_" + `i` + "_" + `j`)
+            print fv.shape
+            label = np.array(list(documents.field_iterator(setting.csv_option.sentiment_name)))
+            np.save(setting.saveprefix + "train_label_" + `i` + "_" + `j`, label)
+            # test
+            documents = Documents(setting.dbprefix + `j` + "/test")
+            fv = build_doc_vector(documents, model, i, True, setting.saveprefix + "test_fv_" + `i` + "_" + `j`)
+            print fv.shape
+            label = np.array(list(documents.field_iterator(setting.csv_option.sentiment_name)))
+            np.save(setting.saveprefix + "test_label_" + `i` + "_" + `j`, label)
+

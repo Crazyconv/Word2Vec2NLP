@@ -23,9 +23,9 @@ def main(model_name, train_dir, test_dir):
 
     # logger info
     build_method = "average word vector"
-    if setting.build_option == 2:
+    if setting.build_option == 1:
         build_method = "average word vector with tf-idf"
-    elif setting.build_option == 3:
+    elif setting.build_option == 2:
         build_method = "cluster word vector"
     logger.debug("text process option: %s", str(setting.process_option))
     logger.debug("use %s to build doc vector", build_method)
@@ -67,13 +67,17 @@ def main(model_name, train_dir, test_dir):
     logger.info("finished prediction in %.4lfs", timeit.default_timer() - start_time)
 
     accuracy = np.mean(predicted_sentiment == list(test_documents.field_iterator(setting.csv_option.sentiment_name)))
+    report = metrics.classification_report(list(test_documents.field_iterator(setting.csv_option.sentiment_name)), \
+            predicted_sentiment, target_names=['0', '1'])
+    reports = report.split()[-4: -1]
 
+    print report
     print "Test Set Accuracy = ", accuracy 
-    print metrics.classification_report(list(test_documents.field_iterator(setting.csv_option.sentiment_name)), \
-        predicted_sentiment, target_names=['0', '1'])
+    print reports
+    
 
 if __name__ == "__main__":
     main("./save/model.bin", \
-        "./dataset/train", \
-        "./dataset/test"
+        "./dataset/Fold0/train", \
+        "./dataset/Fold0/test"
         )

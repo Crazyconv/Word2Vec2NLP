@@ -27,7 +27,7 @@ def compare(dataset, model_name, pre_model_name):
         print word
         print model.most_similar(word, topn=10);
 
-    # load pre-trained google news model
+    load pre-trained google news model
     logger.info("start loading pre-trained dataset")
     start_time = timeit.default_timer()
     pre_model = Word2Vec.load_word2vec_format(pre_model_name, binary=True)
