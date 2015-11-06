@@ -8,18 +8,12 @@ class CsvOption(object):
         self.sentiment_name = sentiment_name
 
 class ProcessOption(object):
-    def __init__(self, rm_html=True, rm_punc=True, rm_num=True, lower_case=True, rm_stop_words=False):
+    def __init__(self, rm_html=True, rm_stop_words=False):
         self.rm_html = rm_html
-        self.rm_punc = rm_punc
-        self.rm_num = rm_num
-        self.lower_case = lower_case
         self.rm_stop_words = rm_stop_words
 
     def __str__(self):
         return str({"rm_html": self.rm_html, \
-            "rm_punc": self.rm_punc, \
-            "rm_num": self.rm_num, \
-            "lower_case": self.lower_case, \
             "rm_stop_words": self.rm_stop_words 
             })
 
@@ -36,8 +30,7 @@ w2v_option = Word2VecOption(num_features=300, min_word_count=40, \
     num_workers=4, context=10, downsampling=1e-3)
 csv_option = CsvOption(deli=",", title=["review", "sentiment"], \
     chunksize=100, review_name="review", sentiment_name="sentiment")
-process_option = ProcessOption(rm_html=True, rm_punc=True, rm_num=True, \
-    lower_case=True, rm_stop_words=False)
+process_option = ProcessOption(rm_html=True, rm_stop_words=True)
 
 to_scale = False
 to_normalize = False
@@ -45,4 +38,10 @@ to_normalize = False
 save_fv = True
 train_fv_name = "train_fv.bin"
 test_fv_name = "test_fv.bin"
-build_option = 1
+build_option = 0
+
+build_methods = ["average word vector", "nlp", "average word vector + senticNet", "nlp + senticNet"]
+classifiers = ["random forest", "svm", "naive bayes"]
+saveprefix = './save/'
+dbprefix = './dataset/Fold'
+model_name = './save/model.bin'
