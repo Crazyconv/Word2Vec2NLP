@@ -46,4 +46,4 @@ def main(dir_name, save=True, save_file="model.bin"):
 
 
 if __name__ == "__main__":
-    build_word_vector("./dataset/all", True, "./save/model.bin")
+    build_word_vector(setting.corpus, True, setting.model_name)

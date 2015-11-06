@@ -1,5 +1,6 @@
 from gensim.models import Word2Vec
 import wordvector
+import setting
 
 import logging
 import timeit
@@ -39,7 +40,4 @@ def compare(dataset, model_name, pre_model_name):
         print pre_model.most_similar(word, topn=10);
 
 if __name__ == "__main__":
-    dataset = "./dataset/all"
-    model_name = "./save/model.bin"
-    pre_model_name = "./dataset/GoogleNews-vectors-negative300.bin.gz"
-    compare(dataset, model_name, pre_model_name)
+    compare(setting.corpus, setting.model_name, setting.pre_model_name)

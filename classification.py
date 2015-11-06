@@ -9,12 +9,13 @@ from sklearn import metrics
 
 import logging
 import setting
+import json
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('sys.stdout')
 
 def classification(option):
-    for i in range(2):
+    for i in range(2,3):
         logger.debug("========== %s ==========", setting.build_methods[i])
         accuracy = 0
         precision = 0
@@ -48,7 +49,7 @@ def classification(option):
             fscore += float(reports[2])
             print "accuracy: ", single_accuracy
             print report
-        
+
         print "********** average **********"
         print "accuracy: ", accuracy/3.0
         print "precision: ", precision/3.0

@@ -42,6 +42,10 @@ build_option = 0
 
 build_methods = ["average word vector", "nlp", "average word vector + senticNet", "nlp + senticNet"]
 classifiers = ["random forest", "svm", "naive bayes"]
+
+corpus = "./dataset/all"
 saveprefix = './save/'
 dbprefix = './dataset/Fold'
 model_name = './save/model.bin'
+pre_model_name = "./dataset/GoogleNews-vectors-negative300.bin.gz"
+sentic_corpus = './dataset/senticNet.json'
