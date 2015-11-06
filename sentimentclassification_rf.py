@@ -73,7 +73,7 @@ def main(model_name, train_dir, test_dir):
         predicted_sentiment, target_names=['0', '1'])
 
 if __name__ == "__main__":
-    main("model.bin", \
-        "/Users/Crazyconv/Conv/DEVELOPMENT/GitFolder/Word2Vec2NLP/dataset/train", \
-        "/Users/Crazyconv/Conv/DEVELOPMENT/GitFolder/Word2Vec2NLP/dataset/test"
+    main("./save/model.bin", \
+        "./dataset/train", \
+        "./dataset/test"
         )

@@ -1,7 +1,4 @@
 env/
+save/
 dataset/
-classifier/
-*.npy
 *.pyc
-*.bin
-*.gz

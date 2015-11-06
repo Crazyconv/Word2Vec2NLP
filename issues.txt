@@ -1,6 +1,0 @@
-1. column name: specified in csv? in program?
-2. process text: seperate and used in both model? one for each?
-3. may remove default in Sentences
-4. lack normization: can do a expliciy normization, but the first 2 already perform it
-5. multiprocessing to speed up
-6. logger

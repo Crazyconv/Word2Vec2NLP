@@ -8,7 +8,7 @@ import os
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('sys.stdout')
 
-# keywords = ['apple', '']
+keywords = ['apple', 'ipad', 'ipod', 'iphone', 'mac', 'macbook']
 
 def compare(dataset, model_name, pre_model_name):
 
@@ -39,7 +39,7 @@ def compare(dataset, model_name, pre_model_name):
         print pre_model.most_similar(word, topn=10);
 
 if __name__ == "__main__":
-    dataset = "/Users/Crazyconv/Conv/DEVELOPMENT/GitFolder/Word2Vec2NLP/dataset/all"
-    model_name = "model.bin"
-    pre_model_name = "/Users/Crazyconv/Conv/DEVELOPMENT/GitFolder/Word2Vec2NLP/GoogleNews-vectors-negative300.bin.gz"
+    dataset = "./dataset/all"
+    model_name = "./save/model.bin"
+    pre_model_name = "./dataset/GoogleNews-vectors-negative300.bin.gz"
     compare(dataset, model_name, pre_model_name)
