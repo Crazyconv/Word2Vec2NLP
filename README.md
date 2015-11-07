@@ -10,9 +10,12 @@ pip install -r requirements.txt
 ```
 * If installation fails, or errors occur when running the application, following [this](https://virtualenv.readthedocs.org/en/latest/) to install virtualenv and install the requirements in the virtual environment. **Recommended**
 
-##  Directory structure and data preparation
+## Usage
+
+* Directory structure and data preparation
   * create a directory called `save` in root
   * if you want to run `similarity.py`, download the google news corpus from [this](https://s3.amazonaws.com/dl4j-distribution/GoogleNews-vectors-negative300.bin.gz), and put it to directory `dataset`
+* Run the following application scripts, based on your interest.
 
 ## Application scripts
 
