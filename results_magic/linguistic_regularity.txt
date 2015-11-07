@@ -1,0 +1,14 @@
+model.most_similar(positive=['android', 'iphone'], negative=['google'])
+[(u'ios', 0.9640474319458008), (u'rt', 0.9616823196411133), (u'#iphone', 0.9597760438919067), (u'wi-fi', 0.9590758085250854), (u'feature', 0.9585250616073608), (u'us', 0.9573452472686768), (u'ipod', 0.9571817517280579), (u'jailbreak', 0.9558840990066528), (u'deals', 0.9557067155838013), (u'day', 0.9549040198326111)]
+
+model.most_similar(positive=['music', 'store'], negative=['ipod'])
+[(u'app', 0.47763592004776), (u'sued', 0.4738191068172455), (u'loud', 0.4706084728240967), (u'want', 0.4705078899860382), (u'data', 0.4690761864185333), (u'android', 0.4668295085430145), (u'big', 0.4664158225059509), (u'mbp', 0.46341636776924133), (u'assist', 0.46068912744522095), (u'thanks', 0.4585801959037781)]
+
+>>> model.most_similar(positive=['surface', 'ipad'], negative=['microsoft'])
+[(u'apple', 0.923995852470398), (u'6s', 0.9238563179969788), (u'gb', 0.9235633611679077), (u'new', 0.9222581386566162), (u'4th', 0.9221169948577881), (u'ago', 0.922103762626648), (u'#apple', 0.9204641580581665), (u'screen', 0.9199645519256592), (u'black', 0.9189286231994629), (u'one', 0.9184474945068359)]
+
+>>> model.doesnt_match("better well good worse".split())
+'worse'
+
+>>> model.doesnt_match("itunes ipad ipod iphone".split())
+'itunes'

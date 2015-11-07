@@ -3,25 +3,40 @@ Using Word2Vec for sentiment analysis
 
 ## requirements
 
-all in python, check requirements.txt for libraries used
+* Python 2.7
+* Check requirements in *requirements.txt*
+```
+pip install -r requirements.txt
+```
+* If installation fails, or errors occur when running the application, following [this](https://virtualenv.readthedocs.org/en/latest/) to install virtualenv and install the requirements in the virtual environment. **Recommended**
 
-## How to use
+##  Directory structure and data preparation
+  * create a directory called `save` in root
+  * if you want to run `similarity.py`, download the google news corpus from [this](https://s3.amazonaws.com/dl4j-distribution/GoogleNews-vectors-negative300.bin.gz), and put it to directory `dataset`
 
-* rename `dataset_used` as `dataset`
-* create a directory called `save` in root
-* run `python wordvector.py` to train and build the word vector
-* run `python docvector.py` to generate feature vectors (training and testing) for different algorithms
-  * word2vec
-  * word2vec + senticNet
-  * nlp
-  * nlp + senticNet
-* run `python classification.py` to run classification
-  * random forest
-  * svm
-  * naive bayes
-* if you want to play with the word similarity, download the google news corpus from https://s3.amazonaws.com/dl4j-distribution/GoogleNews-vectors-negative300.bin.gz, put it to directory `dataset`, and run `python similarity.py`. It will give you the top 10 most similar words to the following words: apple, ipad, ipod, iphone, mac, macbook
-  * This will give the results based on our corpus and google news corpus.
-  * The size of the google news corpus is quite large. You can comment out the relevant code to skip it and just get the result from the data of our corpus
+## Application scripts
+
+* **wordvector.py**: uses Word2Vec to train and compute word vectors for our corpus 
+  * The corpus file is in *dataset/all*
+  * The model is saved in *save/model.bin*
+* **docvector.py**: extracts feature vectors using four algorithms, and save them to directory *save*
+  * there four algorithms are:
+    * Word Averaging
+    * Word Averaging + SentiWordNet
+    * NLPF (Feature sets extracted in assignment 5.4)
+    * NLPF + SentiWordNet
+    * For each algorithms, six feature vectors are produced, as we are to perform 3-fold cross validation, and we have a feature set and a test set for each
+* **classification.py**: apply three machine learning classifiers to the feature vectors produced by `docvector.py` and print performance metrics for each combination of classifier and feature vector
+  * Random Forest
+  * SVM
+  * Naive Bayes
+* **similarity.py**: uses the word vectors computed by `wordvector.py`, and predefined vectors trained from Google News Dataset to find the 10 most similar words for the following keywords:
+  * apple
+  * iphone
+  * ipad
+  * ipod
+  * mac
+  * macbook 
 
 ## Good Luck!
 

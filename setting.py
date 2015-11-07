@@ -8,7 +8,7 @@ class CsvOption(object):
         self.sentiment_name = sentiment_name
 
 class ProcessOption(object):
-    def __init__(self, rm_html=True, rm_stop_words=False):
+    def __init__(self, rm_html=True, rm_stop_words=True):
         self.rm_html = rm_html
         self.rm_stop_words = rm_stop_words
 
@@ -34,11 +34,6 @@ process_option = ProcessOption(rm_html=True, rm_stop_words=True)
 
 to_scale = False
 to_normalize = False
-
-save_fv = True
-train_fv_name = "train_fv.bin"
-test_fv_name = "test_fv.bin"
-build_option = 0
 
 build_methods = ["average word vector", "average word vector + senticNet", "nlp", "nlp + senticNet"]
 classifiers = ["random forest", "svm", "naive bayes"]

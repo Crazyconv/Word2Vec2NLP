@@ -1,4 +1,5 @@
 env/
 save/
-dataset/
+dataset_all/
+dataset/GoogleNews-vectors-negative300.bin.gz
 *.pyc
